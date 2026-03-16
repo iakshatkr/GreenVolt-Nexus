@@ -43,5 +43,22 @@
   .label {
     @apply mb-2 block text-sm font-semibold text-slate-700;
   }
-}
 
+  .landing-shell {
+    background:
+      radial-gradient(circle at top left, rgba(33, 159, 102, 0.26), transparent 28%),
+      radial-gradient(circle at 85% 15%, rgba(244, 184, 96, 0.2), transparent 20%),
+      linear-gradient(180deg, #f7fbf8 0%, #eef7f2 45%, #f8fafc 100%);
+  }
+
+  .landing-orb {
+    background: radial-gradient(circle, rgba(33, 159, 102, 0.55) 0%, rgba(33, 159, 102, 0) 70%);
+    filter: blur(10px);
+  }
+
+  .landing-panel-glow {
+    box-shadow:
+      0 25px 60px rgba(8, 32, 50, 0.16),
+      0 0 0 1px rgba(255, 255, 255, 0.7);
+  }
+}
