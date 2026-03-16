@@ -1,0 +1,134 @@
+/* General Tab Styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #333;
+}
+
+.sb-section {
+  padding: 80px 0;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.sb-section-title {
+  font-size: 2.5rem;
+  color: #28a745;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.sb-section-subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* FAQ Styles */
+#faq .faq-item {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#faq .faq-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#faq .faq-item h3 {
+  font-size: 1.5rem;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+#faq .faq-item p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Privacy Policy Styles */
+#privacy-policy .policy-item {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#privacy-policy .policy-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#privacy-policy .policy-item h3 {
+  font-size: 1.5rem;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+#privacy-policy .policy-item p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Schedule Styles */
+#schedule .schedule-form {
+  background: #f8f9fa;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#schedule .form__group {
+  margin-bottom: 20px;
+}
+
+#schedule .form__group label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+  color: #333;
+}
+
+#schedule .form__group input,
+#schedule .form__group select {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+#schedule .form__group input:focus,
+#schedule .form__group select:focus {
+  outline: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#schedule .sb-button {
+  background: #28a745;
+  color: #fff;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: background 0.3s ease, color 0.3s ease;
+  width: 100%;
+}
+
+#schedule .sb-button:hover {
+  background: #17a2b8;
+  color: #fff;
+}
+
+/* Active Nav Link */
+.navbar-custom .nav-link.active {
+  color: #f8f9fa;
+  font-weight: 600;
+  border-bottom: 2px solid #fff;
+}
