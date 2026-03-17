@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
-import mongoose from 'mongoose';
-import { connectDatabase } from '../config/database.js';
+import { connectDatabase, disconnectDatabase } from '../config/database.js';
 import { demoStations, demoUsers } from '../data/seedData.js';
 import { BOOKING_STATUS, PAYMENT_STATUS } from '../constants/enums.js';
 import { BookingModel } from '../models/Booking.js';
@@ -142,5 +141,5 @@ seed()
     process.exitCode = 1;
   })
   .finally(async () => {
-    await mongoose.disconnect();
+    await disconnectDatabase();
   });

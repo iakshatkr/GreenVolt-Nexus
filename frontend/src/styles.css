@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,59 +6,126 @@
 
 @layer base {
   :root {
-    color: #0f172a;
-    background: #f8fafc;
+    color-scheme: dark;
+    color: #f3f4f6;
+    background: #0a0a0a;
+  }
+
+  html {
+    @apply scroll-smooth;
   }
 
   body {
-    @apply min-h-screen bg-cloud font-body text-slate-900 antialiased;
+    @apply min-h-screen font-body antialiased;
+    background: #0a0a0a;
+    color: #f3f4f6;
   }
 
   #root {
     @apply min-h-screen;
   }
+
+  ::selection {
+    background: rgba(34, 197, 94, 0.35);
+    color: #ffffff;
+  }
 }
 
 @layer components {
   .panel {
-    @apply rounded-3xl border border-white/60 bg-white/85 shadow-panel backdrop-blur;
+    @apply rounded-3xl border shadow-panel;
+    border-color: rgba(255, 255, 255, 0.08);
+    background-color: #111111;
   }
 
   .panel-muted {
-    @apply rounded-3xl border border-slate-200 bg-slate-50;
+    @apply rounded-3xl border;
+    border-color: rgba(255, 255, 255, 0.08);
+    background-color: #171717;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-brand-600 px-5 py-3 font-semibold text-white transition hover:bg-brand-700;
+    @apply inline-flex items-center justify-center rounded-full px-5 py-3 font-semibold text-black transition duration-200;
+    background-color: #22c55e;
+  }
+
+  .btn-primary:hover {
+    background-color: #16a34a;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:border-brand-200 hover:text-brand-700;
+    @apply inline-flex items-center justify-center rounded-full border px-5 py-3 font-semibold text-slate-100 transition duration-200;
+    border-color: rgba(255, 255, 255, 0.12);
+    background-color: #111111;
+  }
+
+  .btn-secondary:hover {
+    background-color: #1a1a1a;
   }
 
   .input {
-    @apply w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-0 transition focus:border-brand-400;
+    @apply w-full rounded-2xl border px-4 py-3 text-sm text-slate-100 outline-none ring-0 transition placeholder:text-slate-500;
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: #171717;
+  }
+
+  .input:focus {
+    border-color: #22c55e;
+    background-color: #1c1c1c;
   }
 
   .label {
-    @apply mb-2 block text-sm font-semibold text-slate-700;
+    @apply mb-2 block text-sm font-semibold text-slate-300;
   }
 
   .landing-shell {
-    background:
-      radial-gradient(circle at top left, rgba(33, 159, 102, 0.26), transparent 28%),
-      radial-gradient(circle at 85% 15%, rgba(244, 184, 96, 0.2), transparent 20%),
-      linear-gradient(180deg, #f7fbf8 0%, #eef7f2 45%, #f8fafc 100%);
+    background: #0a0a0a;
   }
 
-  .landing-orb {
-    background: radial-gradient(circle, rgba(33, 159, 102, 0.55) 0%, rgba(33, 159, 102, 0) 70%);
-    filter: blur(10px);
+  .landing-orb,
+  .hero-grid {
+    display: none;
   }
 
   .landing-panel-glow {
-    box-shadow:
-      0 25px 60px rgba(8, 32, 50, 0.16),
-      0 0 0 1px rgba(255, 255, 255, 0.7);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-300;
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: #171717;
+  }
+
+  .text-night,
+  .text-slate-900,
+  .text-slate-800 {
+    color: #f5f5f5 !important;
+  }
+
+  .text-slate-700 {
+    color: #d4d4d8 !important;
+  }
+
+  .text-slate-600,
+  .text-slate-500 {
+    color: #a1a1aa !important;
+  }
+
+  .text-slate-400 {
+    color: #71717a !important;
+  }
+
+  .border-slate-100,
+  .border-slate-200 {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .bg-slate-50,
+  .bg-white,
+  .bg-white\/75,
+  .bg-white\/80,
+  .bg-white\/85 {
+    background-color: #171717 !important;
   }
 }

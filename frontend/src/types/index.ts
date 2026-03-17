@@ -102,9 +102,27 @@ export interface AdminAnalytics {
   carbonSavedKg: number;
 }
 
+export interface IntegrationStatus {
+  frontendOrigin: string;
+  api: {
+    status: string;
+  };
+  database: {
+    mode: 'atlas' | 'memory' | 'disconnected';
+    readyState: number;
+    state: string;
+    databaseName: string | null;
+    collections: {
+      users: number;
+      stations: number;
+      bookings: number;
+      payments: number;
+    };
+  };
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string;
 }
-

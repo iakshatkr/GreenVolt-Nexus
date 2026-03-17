@@ -5,6 +5,7 @@ import { authRoutes } from './authRoutes.js';
 import { bookingRoutes } from './bookingRoutes.js';
 import { paymentRoutes } from './paymentRoutes.js';
 import { stationRoutes } from './stationRoutes.js';
+import { systemRoutes } from './systemRoutes.js';
 
 const router = Router();
 
@@ -14,6 +15,6 @@ router.use('/bookings', bookingRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/admin', adminRoutes);
+router.use('/system', systemRoutes);
 
 export { router as apiRoutes };
-

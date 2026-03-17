@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
+import { getDatabaseStatus } from './config/database.js';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { loggerMiddleware } from './middleware/logger.js';
@@ -22,11 +23,15 @@ app.use(express.json());
 app.get('/health', (_req, res) => {
   res.json({
     success: true,
-    message: 'GreenVolt Nexus API is running'
+    message: 'GreenVolt Nexus API is running',
+    data: {
+      api: 'online',
+      frontendOrigin: env.CLIENT_URL,
+      database: getDatabaseStatus()
+    }
   });
 });
 
 app.use('/api', apiRoutes);
 app.use(notFound);
 app.use(errorHandler);
-

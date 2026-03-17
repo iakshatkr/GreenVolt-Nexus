@@ -24,9 +24,7 @@ export const RegisterPage = () => {
     setError('');
 
     try {
-      const response = await apiClient.post<
-        ApiResponse<{ user: AuthUser; token: string }>
-      >('/auth/register', form);
+      const response = await apiClient.post<ApiResponse<{ user: AuthUser; token: string }>>('/auth/register', form);
       setAuth(response.data.data);
       navigate(form.role === 'station_owner' ? '/app/owner' : '/app/user', { replace: true });
     } catch {
@@ -37,13 +35,31 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-hero-glow px-4 py-10">
-      <div className="mx-auto max-w-3xl">
-        <form className="panel p-8" onSubmit={submit}>
-          <h1 className="font-display text-4xl font-bold text-night">Create your GreenVolt Nexus account</h1>
-          <p className="mt-3 text-sm text-slate-500">
-            Choose whether you want to join as a driver or a station owner.
+    <div className="min-h-screen bg-hero-glow px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="panel p-7 sm:p-9">
+          <p className="eyebrow">Create account</p>
+          <h1 className="mt-6 font-display text-4xl font-semibold text-white">Simple onboarding for drivers and owners.</h1>
+          <p className="mt-4 text-base leading-7 text-slate-400">
+            The registration screen now follows the same plain dark look as the rest of the product.
           </p>
+          <div className="mt-8 space-y-3">
+            {[
+              'Choose a user or station owner role',
+              'Create your account and get routed to the correct dashboard',
+              'Use the same clean dark layout on desktop and phone'
+            ].map((item) => (
+              <div key={item} className="panel-muted p-4 text-sm text-slate-300">
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <form className="panel p-7 sm:p-9" onSubmit={submit}>
+          <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Get started</p>
+          <h2 className="mt-4 font-display text-3xl font-semibold text-white">Create your account</h2>
+          <p className="mt-2 text-sm text-slate-400">Choose whether you want to join as a driver or a station owner.</p>
 
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             <div>
@@ -75,15 +91,15 @@ export const RegisterPage = () => {
             </div>
           </div>
 
-          {error ? <p className="mt-4 text-sm text-rose-600">{error}</p> : null}
+          {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
 
           <button type="submit" className="btn-primary mt-8 w-full" disabled={submitting}>
             {submitting ? 'Creating account...' : 'Create account'}
           </button>
 
-          <p className="mt-6 text-sm text-slate-500">
+          <p className="mt-6 text-sm text-slate-400">
             Already registered?{' '}
-            <Link to="/login" className="font-semibold text-brand-700">
+            <Link to="/login" className="font-semibold text-white">
               Sign in
             </Link>
           </p>
@@ -92,4 +108,3 @@ export const RegisterPage = () => {
     </div>
   );
 };
-
