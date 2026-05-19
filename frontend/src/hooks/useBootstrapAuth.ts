@@ -4,18 +4,12 @@ import { useAuthStore } from '../store/authStore';
 import type { ApiResponse, AuthUser } from '../types';
 
 export const useBootstrapAuth = () => {
-  const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const logout = useAuthStore((state) => state.logout);
   const markInitialized = useAuthStore((state) => state.markInitialized);
 
   useEffect(() => {
-    if (!token) {
-      markInitialized();
-      return;
-    }
-
     if (user) {
       markInitialized();
       return;
@@ -30,6 +24,5 @@ export const useBootstrapAuth = () => {
       .catch(() => {
         logout();
       });
-  }, [logout, markInitialized, setUser, token, user]);
+  }, [logout, markInitialized, setUser, user]);
 };
-

@@ -24,7 +24,7 @@ export const RegisterPage = () => {
     setError('');
 
     try {
-      const response = await apiClient.post<ApiResponse<{ user: AuthUser; token: string }>>('/auth/register', form);
+      const response = await apiClient.post<ApiResponse<{ user: AuthUser }>>('/auth/register', form);
       setAuth(response.data.data);
       navigate(form.role === 'station_owner' ? '/app/owner' : '/app/user', { replace: true });
     } catch {

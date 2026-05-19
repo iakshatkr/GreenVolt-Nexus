@@ -30,7 +30,7 @@ export const LoginPage = () => {
     setError('');
 
     try {
-      const response = await apiClient.post<ApiResponse<{ user: AuthUser; token: string }>>('/auth/login', form);
+      const response = await apiClient.post<ApiResponse<{ user: AuthUser }>>('/auth/login', form);
       setAuth(response.data.data);
       const destination = (location.state as { from?: string } | null)?.from;
       navigate(destination ?? nextPath(response.data.data.user.role), { replace: true });
