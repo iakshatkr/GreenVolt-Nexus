@@ -12,9 +12,11 @@ import {
 } from 'recharts';
 import { apiClient } from '../../api/client';
 import { StationMap } from '../../components/map/StationMap';
+import { EmptyState } from '../../components/shared/EmptyState';
 import { MetricCard } from '../../components/shared/MetricCard';
 import { SectionCard } from '../../components/shared/SectionCard';
 import { StatusBadge } from '../../components/shared/StatusBadge';
+import { useToast } from '../../components/shared/ToastProvider';
 import { formatCurrency, formatDateTime } from '../../lib/utils';
 import type { ApiResponse, Booking, Payment, Station } from '../../types';
 
@@ -33,6 +35,8 @@ export const UserDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [bookingSuccessModal, setBookingSuccessModal] = useState(false);
+  const { showToast } = useToast();
 
   const selectedStation = stations.find((station) => station._id === selectedStationId) ?? stations[0];
 
@@ -97,9 +101,12 @@ export const UserDashboardPage = () => {
         energyRequestedKwh: Number(bookingForm.energyRequestedKwh)
       });
       setMessage('Booking created successfully.');
+      setBookingSuccessModal(true);
+      showToast('Charging slot booked successfully.', 'success');
       await loadDashboard();
     } catch {
       setMessage('We could not create that booking. The slot may already be reserved.');
+      showToast('Booking failed due to conflict.', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -110,9 +117,11 @@ export const UserDashboardPage = () => {
     try {
       await apiClient.post(`/payments/checkout/${bookingId}`);
       setMessage('Payment completed and invoice recorded.');
+      showToast('Payment simulated successfully.', 'success');
       await loadDashboard();
     } catch {
       setMessage('Payment simulation failed. Please try again.');
+      showToast('Payment action failed.', 'error');
     }
   };
 
@@ -165,8 +174,8 @@ export const UserDashboardPage = () => {
             onSelect={(station) => setSelectedStationId(station._id)}
           />
 
-          <div className="space-y-4">
-            {stations.map((station) => (
+            <div className="space-y-4">
+            {stations.length ? stations.map((station) => (
               <button
                 key={station._id}
                 type="button"
@@ -190,7 +199,7 @@ export const UserDashboardPage = () => {
                   <p>{formatCurrency(station.pricePerKwh)}/kWh</p>
                 </div>
               </button>
-            ))}
+            )) : <EmptyState title="No stations found" description="Try adjusting city or search filters to discover charging stations." />}
           </div>
         </div>
       </SectionCard>
@@ -359,8 +368,21 @@ export const UserDashboardPage = () => {
               ))}
             </tbody>
           </table>
+          {!bookings.length ? <div className="mt-4"><EmptyState title="No bookings yet" description="Create your first booking from nearby stations and it will appear here." /></div> : null}
         </div>
       </SectionCard>
+
+      {bookingSuccessModal ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/35 p-4">
+          <div className="panel w-full max-w-md p-6">
+            <h3 className="text-xl font-semibold text-slate-900">Booking Confirmed</h3>
+            <p className="mt-2 text-sm text-slate-600">Your charging slot is reserved. You can proceed to payment from the bookings table.</p>
+            <button className="btn-primary mt-5 w-full" onClick={() => setBookingSuccessModal(false)}>
+              Continue
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
