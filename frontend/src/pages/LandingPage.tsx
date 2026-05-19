@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRightIcon,
   BoltIcon,
@@ -8,7 +8,7 @@ import {
   MapPinIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import type { ApiResponse, IntegrationStatus } from '../types';
@@ -66,6 +66,10 @@ const stagger = {
   }
 };
 
+const CinematicHero3D = lazy(() =>
+  import('../components/landing/CinematicHero3D').then((module) => ({ default: module.CinematicHero3D }))
+);
+
 const AnimatedCount = ({ value, suffix }: { value: number; suffix: string }) => {
   const [count, setCount] = useState(0);
 
@@ -95,7 +99,19 @@ const AnimatedCount = ({ value, suffix }: { value: number; suffix: string }) => 
 export const LandingPage = () => {
   const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus | null>(null);
   const [typedTitle, setTypedTitle] = useState('');
-  const fullTitle = 'GREENVOLT NEXUS';
+  const [showSubtitle, setShowSubtitle] = useState(false);
+  const [heroDisperse, setHeroDisperse] = useState(0);
+  const heroRef = useRef<HTMLElement | null>(null);
+  const heroTitle = 'GREENVOLT NEXUS';
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start']
+  });
+  const smoothDisperse = useSpring(scrollYProgress, {
+    stiffness: 90,
+    damping: 24,
+    mass: 0.3
+  });
 
   useEffect(() => {
     apiClient
@@ -105,55 +121,97 @@ export const LandingPage = () => {
   }, []);
 
   useEffect(() => {
+    const unsubscribe = smoothDisperse.on('change', (value) => {
+      setHeroDisperse(Math.max(0, Math.min(1, value)));
+    });
+
+    return () => unsubscribe();
+  }, [smoothDisperse]);
+
+  useEffect(() => {
     let index = 0;
+    let subtitleTimer: number | null = null;
+    setTypedTitle('');
+    setShowSubtitle(false);
+
     const id = window.setInterval(() => {
       index += 1;
-      setTypedTitle(fullTitle.slice(0, index));
-      if (index >= fullTitle.length) {
+      setTypedTitle(heroTitle.slice(0, index));
+      if (index >= heroTitle.length) {
         window.clearInterval(id);
+        subtitleTimer = window.setTimeout(() => setShowSubtitle(true), 140);
       }
-    }, 95);
+    }, 85);
 
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+      if (subtitleTimer) {
+        window.clearTimeout(subtitleTimer);
+      }
+    };
   }, []);
 
   const liveStatus = useMemo(() => integrationStatus?.api.status ?? 'standby', [integrationStatus]);
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
-        <section className="relative mb-8 flex min-h-[58vh] items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.16),transparent_58%)]" />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
+      <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden">
+        <div className="absolute inset-0">
+          <Suspense
+            fallback={
+              <div className="flex h-full w-full items-center justify-center bg-[#04070d]">
+                <div className="h-20 w-20 rounded-full border border-emerald-500/35 bg-emerald-400/10" />
+              </div>
+            }
           >
-            <motion.h1
-              initial={{ y: 26, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.9 }}
-              className="font-display text-[2.8rem] font-semibold tracking-[0.24em] text-slate-500 sm:text-[4.2rem] lg:text-[6.4rem]"
-            >
+            <CinematicHero3D disperse={heroDisperse} />
+          </Suspense>
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.16),transparent_56%)]" />
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col items-center justify-between px-6 pb-10 pt-12 text-center sm:pb-14 sm:pt-16"
+        >
+          <div className="w-full">
+            <h1 className="font-display text-[2rem] font-semibold tracking-[0.2em] text-emerald-200 sm:text-[2.8rem] lg:text-[3.8rem]">
               {typedTitle}
               <motion.span
-                animate={{ opacity: [1, 0, 1] }}
+                animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ duration: 0.9, repeat: Infinity }}
-                className="ml-2 inline-block text-emerald-300"
+                className="ml-1 inline-block text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.25)]"
               >
                 |
               </motion.span>
-            </motion.h1>
-            <motion.p
-              animate={{ x: [0, 18, 0] }}
-              transition={{ duration: 4.8, repeat: Infinity, ease: 'linear' }}
-              className="mt-4 text-sm uppercase tracking-[0.35em] text-emerald-300"
-            >
-              Intelligent EV Platform
-            </motion.p>
+            </h1>
+          </div>
+
+          <div className="h-[36vh] w-full sm:h-[40vh] lg:h-[44vh]" />
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={showSubtitle ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+            transition={{ duration: 0.55 }}
+            className="w-full"
+          >
+            <p className="mx-auto max-w-2xl text-sm text-slate-300 sm:text-base">
+              for modern charging networks, built to feel immersive, calm, and premium.
+            </p>
+            <div className="pointer-events-auto mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a href="#metrics" className="btn-secondary min-w-[180px]">
+                Explore Stations
+              </a>
+              <Link to="/register" className="btn-primary min-w-[180px] gap-2">
+                Get Started
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            </div>
           </motion.div>
-        </section>
+        </motion.div>
+      </section>
+
+      <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
 
         <motion.header
           initial="hidden"
