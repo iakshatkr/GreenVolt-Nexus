@@ -9,9 +9,11 @@ import {
   YAxis
 } from 'recharts';
 import { apiClient } from '../../api/client';
+import { EmptyState } from '../../components/shared/EmptyState';
 import { MetricCard } from '../../components/shared/MetricCard';
 import { SectionCard } from '../../components/shared/SectionCard';
 import { StatusBadge } from '../../components/shared/StatusBadge';
+import { useToast } from '../../components/shared/ToastProvider';
 import { formatCurrency } from '../../lib/utils';
 import type { AdminAnalytics, ApiResponse, AuthUser, Station } from '../../types';
 
@@ -25,6 +27,7 @@ export const AdminDashboardPage = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [stations, setStations] = useState<Station[]>([]);
   const [message, setMessage] = useState('');
+  const { showToast } = useToast();
 
   const loadDashboard = async () => {
     const [analyticsResponse, usersResponse, stationsResponse] = await Promise.all([
@@ -46,6 +49,7 @@ export const AdminDashboardPage = () => {
     setMessage('');
     await apiClient.patch(`/admin/stations/${stationId}/approval`, { approvalStatus });
     setMessage(`Station ${approvalStatus}.`);
+    showToast(`Station ${approvalStatus}.`, 'success');
     await loadDashboard();
   };
 
@@ -53,6 +57,7 @@ export const AdminDashboardPage = () => {
     setMessage('');
     await apiClient.delete(`/admin/users/${userId}`);
     setMessage('User deleted.');
+    showToast('User removed.', 'success');
     await loadDashboard();
   };
 
@@ -139,6 +144,7 @@ export const AdminDashboardPage = () => {
               ))}
             </tbody>
           </table>
+          {!stations.length ? <div className="mt-4"><EmptyState title="No stations in queue" description="Submitted stations will appear here for moderation." /></div> : null}
         </div>
       </SectionCard>
 
@@ -172,6 +178,7 @@ export const AdminDashboardPage = () => {
               ))}
             </tbody>
           </table>
+          {!users.length ? <div className="mt-4"><EmptyState title="No users found" description="User accounts will appear here once registrations happen." /></div> : null}
         </div>
       </SectionCard>
     </div>
