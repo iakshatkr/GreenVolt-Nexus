@@ -4,49 +4,98 @@ import {
   BoltIcon,
   CalendarDaysIcon,
   ChartBarIcon,
-  CommandLineIcon,
+  CpuChipIcon,
   MapPinIcon,
-  SignalIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { apiClient } from '../api/client';
 import type { ApiResponse, IntegrationStatus } from '../types';
 
-const counters = [
+const stats = [
   { label: 'Charging Stations', value: 50, suffix: '+' },
   { label: 'Bookings', value: 1000, suffix: '+' },
-  { label: 'System Uptime', value: 95, suffix: '%' },
-  { label: 'Smart Monitoring', value: 24, suffix: '/7' }
+  { label: 'Uptime', value: 95, suffix: '%' },
+  { label: 'Monitoring', value: 24, suffix: '/7' }
 ];
 
 const features = [
-  { icon: MapPinIcon, title: 'Real-time station discovery', copy: 'Locate available EV stations instantly with live location intelligence.' },
-  { icon: CalendarDaysIcon, title: 'Slot booking', copy: 'Reserve charging windows with conflict-free scheduling.' },
-  { icon: ChartBarIcon, title: 'Energy analytics', copy: 'Track charging trends, utilization, and sustainability impact.' },
-  { icon: CommandLineIcon, title: 'Smart management dashboard', copy: 'Control owners, users, stations, and operations from one panel.' }
+  {
+    icon: MapPinIcon,
+    title: 'Station discovery',
+    description: 'Locate nearby EV stations with real-time availability and route-aware access.'
+  },
+  {
+    icon: CalendarDaysIcon,
+    title: 'Smart booking',
+    description: 'Reserve precise charging windows with conflict prevention and optimized slots.'
+  },
+  {
+    icon: ChartBarIcon,
+    title: 'Analytics dashboard',
+    description: 'Track bookings, utilization, revenue, and energy trends in one command view.'
+  },
+  {
+    icon: CpuChipIcon,
+    title: 'Energy monitoring',
+    description: 'Measure delivered power, solar output, and operational efficiency continuously.'
+  }
 ];
+
+const ownerPoints = [
+  'Booking lifecycle management',
+  'Revenue and utilization analytics',
+  'Operational visibility across stations',
+  'Energy and performance insights'
+];
+
+const section = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65 }
+  }
+};
+
+const stagger = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.1 }
+  }
+};
 
 const AnimatedCount = ({ value, suffix }: { value: number; suffix: string }) => {
   const [count, setCount] = useState(0);
+
   useEffect(() => {
-    const step = Math.max(1, Math.floor(value / 24));
+    const step = Math.max(1, Math.floor(value / 28));
     const id = window.setInterval(() => {
-      setCount((c) => {
-        if (c + step >= value) {
+      setCount((current) => {
+        if (current + step >= value) {
           window.clearInterval(id);
           return value;
         }
-        return c + step;
+        return current + step;
       });
     }, 35);
+
     return () => window.clearInterval(id);
   }, [value]);
-  return <span>{count}{suffix}</span>;
+
+  return (
+    <span>
+      {count}
+      {suffix}
+    </span>
+  );
 };
 
 export const LandingPage = () => {
   const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus | null>(null);
+  const [typedTitle, setTypedTitle] = useState('');
+  const fullTitle = 'GREENVOLT NEXUS';
 
   useEffect(() => {
     apiClient
@@ -55,45 +104,128 @@ export const LandingPage = () => {
       .catch(() => setIntegrationStatus(null));
   }, []);
 
-  const statusText = useMemo(() => integrationStatus?.api.status ?? 'standby', [integrationStatus]);
+  useEffect(() => {
+    let index = 0;
+    const id = window.setInterval(() => {
+      index += 1;
+      setTypedTitle(fullTitle.slice(0, index));
+      if (index >= fullTitle.length) {
+        window.clearInterval(id);
+      }
+    }, 95);
+
+    return () => window.clearInterval(id);
+  }, []);
+
+  const liveStatus = useMemo(() => integrationStatus?.api.status ?? 'standby', [integrationStatus]);
 
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
-        <header className="panel mb-6 px-6 py-4">
+        <section className="relative mb-8 flex min-h-[58vh] items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.16),transparent_58%)]" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <motion.h1
+              initial={{ y: 26, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.9 }}
+              className="font-display text-[2.8rem] font-semibold tracking-[0.24em] text-slate-500 sm:text-[4.2rem] lg:text-[6.4rem]"
+            >
+              {typedTitle}
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 0.9, repeat: Infinity }}
+                className="ml-2 inline-block text-emerald-300"
+              >
+                |
+              </motion.span>
+            </motion.h1>
+            <motion.p
+              animate={{ x: [0, 18, 0] }}
+              transition={{ duration: 4.8, repeat: Infinity, ease: 'linear' }}
+              className="mt-4 text-sm uppercase tracking-[0.35em] text-emerald-300"
+            >
+              Intelligent EV Platform
+            </motion.p>
+          </motion.div>
+        </section>
+
+        <motion.header
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={section}
+          className="panel mb-8 px-6 py-4"
+        >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <div className="brand-mark"><BoltIcon className="h-4 w-4" /></div>
+              <div className="brand-mark">
+                <BoltIcon className="h-4 w-4" />
+              </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-slate-500">GreenVolt Nexus</p>
-                <p className="text-sm font-medium text-slate-800">Premium EV charging operations</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-slate-400">GreenVolt Nexus</p>
+                <p className="text-sm text-slate-500">Premium EV charging SaaS</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Link to="/login" className="btn-secondary">Sign in</Link>
-              <Link to="/register" className="btn-primary">Get Started</Link>
+              <Link to="/login" className="btn-secondary">
+                Sign in
+              </Link>
+              <Link to="/register" className="btn-primary">
+                Get Started
+              </Link>
             </div>
           </div>
-        </header>
+        </motion.header>
 
-        <section className="panel relative overflow-hidden px-6 py-12 sm:px-10">
-          <div className="absolute -right-28 -top-28 h-72 w-72 rounded-full bg-emerald-200/50 blur-3xl" />
-          <div className="absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-blue-200/50 blur-3xl" />
+        <motion.section
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.35 }}
+          variants={section}
+          className="panel relative overflow-hidden px-6 py-14 sm:px-10"
+        >
+          <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-emerald-400/20 blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl" />
+
           <div className="relative grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-center">
-            <div>
-              <p className="section-kicker">Enterprise EV orchestration</p>
-              <h1 className="mt-4 font-display text-5xl font-semibold tracking-tight text-slate-900 sm:text-6xl">Smart EV Charging Management Platform</h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Run charging operations with real-time station visibility, booking intelligence, and analytics crafted for modern energy teams.</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a href="#metrics" className="btn-secondary">Explore Stations</a>
-                <Link to="/register" className="btn-primary gap-2">Get Started <ArrowRightIcon className="h-4 w-4" /></Link>
-              </div>
-            </div>
-            <div className="panel-muted p-4">
-              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              <motion.p variants={section} className="section-kicker">
+                Enterprise EV orchestration
+              </motion.p>
+              <motion.h1 variants={section} className="mt-4 font-display text-5xl font-semibold tracking-tight text-slate-900 sm:text-6xl">
+                Smart EV Charging Management Platform
+              </motion.h1>
+              <motion.p variants={section} className="mt-6 max-w-2xl text-lg leading-8 text-slate-500">
+                Futuristic control for charging operations with seamless booking, fleet-grade monitoring, and elegant product experiences.
+              </motion.p>
+              <motion.div variants={section} className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <a href="#metrics" className="btn-secondary">
+                  Explore Stations
+                </a>
+                <Link to="/register" className="btn-primary gap-2">
+                  Get Started
+                  <ArrowRightIcon className="h-4 w-4" />
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            <motion.div variants={section} className="panel-muted relative p-5">
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                className="rounded-2xl border border-slate-200 bg-white p-5"
+              >
                 <div className="mb-4 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-700">Live Control Center</p>
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{statusText}</span>
+                  <p className="text-sm font-semibold text-slate-600">Live command center</p>
+                  <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+                    {liveStatus}
+                  </span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="panel-muted p-3"><p className="text-xs text-slate-500">Bookings today</p><p className="mt-1 text-xl font-semibold text-slate-900">148</p></div>
@@ -101,74 +233,127 @@ export const LandingPage = () => {
                   <div className="panel-muted p-3"><p className="text-xs text-slate-500">Energy delivered</p><p className="mt-1 text-xl font-semibold text-slate-900">2.8 MWh</p></div>
                   <div className="panel-muted p-3"><p className="text-xs text-slate-500">Queue latency</p><p className="mt-1 text-xl font-semibold text-slate-900">28 ms</p></div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
-        <section id="metrics" className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {counters.map((item) => (
-            <div key={item.label} className="panel p-5">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{item.label}</p>
-              <p className="mt-3 font-display text-4xl font-bold text-slate-900"><AnimatedCount value={item.value} suffix={item.suffix} /></p>
-            </div>
+        <motion.section
+          id="metrics"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={stagger}
+          className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          {stats.map((item) => (
+            <motion.article key={item.label} variants={section} whileHover={{ y: -4 }} className="panel p-5 transition">
+              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{item.label}</p>
+              <p className="mt-3 font-display text-4xl font-semibold text-slate-900">
+                <AnimatedCount value={item.value} suffix={item.suffix} />
+              </p>
+            </motion.article>
           ))}
-        </section>
+        </motion.section>
 
-        <section className="mt-12">
-          <div className="mb-5">
-            <p className="section-kicker">Core features</p>
-            <h2 className="section-title">Built for drivers, operators, and energy teams.</h2>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
+        <motion.section
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={section}
+          className="mt-14"
+        >
+          <p className="section-kicker">Features</p>
+          <h2 className="mt-3 font-display text-4xl font-semibold text-slate-900">Modern EV intelligence for every workflow.</h2>
+          <motion.div variants={stagger} className="mt-6 grid gap-4 md:grid-cols-2">
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
-                <article key={feature.title} className="panel group p-6 transition hover:-translate-y-1">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+                <motion.article
+                  key={feature.title}
+                  variants={section}
+                  whileHover={{ y: -5 }}
+                  className="panel group p-6 transition"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-300 transition group-hover:bg-emerald-500/25">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="mt-4 text-xl font-semibold text-slate-900">{feature.title}</h3>
-                  <p className="mt-2 text-slate-600">{feature.copy}</p>
-                </article>
+                  <p className="mt-2 text-slate-500">{feature.description}</p>
+                </motion.article>
               );
             })}
+          </motion.div>
+        </motion.section>
+
+        <motion.section
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          variants={stagger}
+          className="mt-14"
+        >
+          <p className="section-kicker">How it works</p>
+          <div className="mt-5 grid gap-4 lg:grid-cols-3">
+            {['Find station', 'Book slot', 'Start charging'].map((step, index) => (
+              <motion.article key={step} variants={section} className="panel relative p-5">
+                <div className="absolute right-4 top-4 text-xs text-slate-500">0{index + 1}</div>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Step {index + 1}</p>
+                <h3 className="mt-3 text-2xl font-semibold text-slate-900">{step}</h3>
+                <p className="mt-2 text-slate-500">A clean, intuitive charging journey with minimal friction.</p>
+              </motion.article>
+            ))}
           </div>
-        </section>
+        </motion.section>
 
-        <section className="mt-12 grid gap-4 lg:grid-cols-3">
-          {['Find station', 'Book slot', 'Start charging'].map((step, index) => (
-            <div key={step} className="panel p-5">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Step {index + 1}</p>
-              <p className="mt-3 text-2xl font-semibold text-slate-900">{step}</p>
-              <p className="mt-2 text-slate-600">Fast, intuitive flow optimized for repeat usage.</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="panel p-7">
-            <p className="section-kicker">For station owners</p>
-            <h2 className="mt-2 font-display text-4xl font-semibold text-slate-900">Operate charging business with confidence.</h2>
-            <ul className="mt-5 space-y-2 text-slate-600">
-              <li>Booking management and queue visibility</li>
-              <li>Revenue and utilization analytics</li>
-              <li>Energy insights and operational monitoring</li>
-              <li>Approval workflows and role controls</li>
+        <motion.section
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={stagger}
+          className="mt-14 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]"
+        >
+          <motion.article variants={section} className="panel p-7">
+            <p className="section-kicker">For Station Owners</p>
+            <h2 className="mt-2 font-display text-4xl font-semibold text-slate-900">Scale your charging network with operational clarity.</h2>
+            <ul className="mt-5 space-y-2 text-slate-500">
+              {ownerPoints.map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <SparklesIcon className="h-4 w-4 text-emerald-300" />
+                  {item}
+                </li>
+              ))}
             </ul>
-          </div>
-          <div className="panel p-7">
+          </motion.article>
+
+          <motion.article variants={section} className="panel p-7">
             <p className="section-kicker">Pricing</p>
             <div className="mt-4 space-y-4">
-              <div className="panel-muted p-4"><p className="text-sm text-slate-500">Free</p><p className="mt-1 text-2xl font-semibold text-slate-900">$0/mo</p><p className="mt-1 text-sm text-slate-600">Basic station discovery and booking</p></div>
-              <div className="panel-muted border-emerald-200 bg-emerald-50/60 p-4"><p className="text-sm text-emerald-700">Pro</p><p className="mt-1 text-2xl font-semibold text-slate-900">$29/mo</p><p className="mt-1 text-sm text-slate-600">Advanced analytics and operations suite</p></div>
+              <motion.div whileHover={{ y: -3 }} className="panel-muted p-4">
+                <p className="text-sm text-slate-500">Free</p>
+                <p className="mt-1 text-3xl font-semibold text-slate-900">$0/mo</p>
+                <p className="mt-1 text-sm text-slate-500">Basic station discovery and booking workflows.</p>
+              </motion.div>
+              <motion.div whileHover={{ y: -3 }} className="panel-muted border-emerald-500/30 bg-emerald-500/10 p-4">
+                <p className="text-sm text-emerald-300">Pro</p>
+                <p className="mt-1 text-3xl font-semibold text-slate-900">$29/mo</p>
+                <p className="mt-1 text-sm text-slate-500">Analytics suite, operations insights, and advanced controls.</p>
+              </motion.div>
             </div>
-          </div>
-        </section>
+          </motion.article>
+        </motion.section>
 
-        <footer className="mt-12 border-t border-slate-200 py-8">
+        <motion.footer
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={section}
+          className="mt-14 border-t border-slate-200 py-8"
+        >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-slate-600"><SparklesIcon className="h-4 w-4" /> GreenVolt Nexus</div>
+            <div className="flex items-center gap-2 text-slate-500">
+              <SparklesIcon className="h-4 w-4" /> GreenVolt Nexus
+            </div>
             <div className="flex items-center gap-4 text-sm text-slate-500">
               <a href="#metrics">Metrics</a>
               <a href="#">LinkedIn</a>
@@ -176,7 +361,7 @@ export const LandingPage = () => {
               <a href="#">Support</a>
             </div>
           </div>
-        </footer>
+        </motion.footer>
       </div>
     </div>
   );

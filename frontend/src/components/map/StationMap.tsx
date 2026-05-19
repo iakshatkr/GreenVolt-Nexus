@@ -71,7 +71,7 @@ export const StationMap = ({ stations, selectedStationId, onSelect }: StationMap
         mapboxAccessToken={mapboxToken}
         initialViewState={{ longitude: defaultCenter[0], latitude: defaultCenter[1], zoom: 11 }}
         style={{ width: '100%', height: 380 }}
-        mapStyle="mapbox://styles/mapbox/light-v11"
+        mapStyle="mapbox://styles/mapbox/navigation-night-v1"
       >
         <NavigationControl position="top-right" />
         <Source id="stations" type="geojson" data={geojson} cluster clusterRadius={40} clusterMaxZoom={13}>

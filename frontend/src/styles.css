@@ -6,16 +6,16 @@
 
 @layer base {
   :root {
-    --bg: #f6f8fc;
-    --surface: #ffffff;
-    --surface-muted: #f8fafc;
-    --text: #0f172a;
-    --text-muted: #64748b;
-    --line: #e2e8f0;
-    --brand: #0f9d77;
-    --brand-strong: #0a7a5d;
-    color: #0f172a;
-    background: #f5f7fb;
+    --bg: #05070b;
+    --surface: #0f141c;
+    --surface-muted: #131a23;
+    --text: #e5edf7;
+    --text-muted: #9fb0c6;
+    --line: #253143;
+    --brand: #10b981;
+    --brand-strong: #0d9d72;
+    color: var(--text);
+    background: var(--bg);
   }
 
   html {
@@ -25,10 +25,10 @@
   body {
     @apply min-h-screen font-body antialiased;
     background:
-      radial-gradient(circle at 10% -10%, rgba(15, 157, 119, 0.12), transparent 34%),
-      radial-gradient(circle at 95% 10%, rgba(37, 99, 235, 0.09), transparent 32%),
-      linear-gradient(180deg, #f8fafc 0%, #f2f6fb 100%);
-    color: #0f172a;
+      radial-gradient(circle at 10% -10%, rgba(16, 185, 129, 0.16), transparent 34%),
+      radial-gradient(circle at 95% 10%, rgba(34, 211, 238, 0.1), transparent 32%),
+      linear-gradient(180deg, #05070b 0%, #060a12 100%);
+    color: var(--text);
   }
 
   #root {
@@ -36,51 +36,59 @@
   }
 
   ::selection {
-    background: rgba(16, 185, 129, 0.18);
-    color: #0f172a;
+    background: rgba(16, 185, 129, 0.3);
+    color: #eafff7;
   }
 }
 
 @layer components {
   .panel {
-    @apply rounded-[28px] border bg-white shadow-sm;
-    border-color: rgba(148, 163, 184, 0.18);
+    @apply rounded-[28px] border shadow-sm;
+    background: linear-gradient(180deg, rgba(15, 20, 28, 0.95), rgba(12, 18, 27, 0.95));
+    border-color: rgba(110, 126, 150, 0.24);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
   }
 
   .panel-muted {
-    @apply rounded-[24px] border bg-slate-50;
-    border-color: rgba(148, 163, 184, 0.15);
+    @apply rounded-[24px] border;
+    background: rgba(20, 28, 40, 0.8);
+    border-color: rgba(110, 126, 150, 0.22);
   }
 
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-semibold text-white transition duration-200;
-    background: #1f9d55;
+    background: linear-gradient(135deg, #10b981, #06b6d4);
   }
 
   .btn-primary:hover {
-    background: #16803f;
+    filter: brightness(1.08);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border bg-white px-5 py-3 font-semibold text-slate-700 transition duration-200;
-    border-color: rgba(148, 163, 184, 0.28);
+    @apply inline-flex items-center justify-center rounded-xl border px-5 py-3 font-semibold transition duration-200;
+    background: rgba(17, 24, 39, 0.7);
+    color: #dbe8f8;
+    border-color: rgba(110, 126, 150, 0.3);
   }
 
   .btn-secondary:hover {
-    @apply bg-slate-50 text-slate-900;
+    background: rgba(28, 38, 54, 0.88);
   }
 
   .input {
-    @apply w-full rounded-2xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-0 transition placeholder:text-slate-400;
-    border-color: rgba(148, 163, 184, 0.2);
+    @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none ring-0 transition placeholder:text-slate-500;
+    background: rgba(12, 18, 27, 0.85);
+    color: #e7effc;
+    border-color: rgba(110, 126, 150, 0.26);
   }
 
   .input:focus {
-    border-color: rgba(16, 185, 129, 0.4);
+    border-color: rgba(16, 185, 129, 0.65);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.18);
   }
 
   .label {
-    @apply mb-2 block text-sm font-semibold text-slate-700;
+    @apply mb-2 block text-sm font-semibold text-slate-300;
   }
 
   .landing-shell {
@@ -127,11 +135,11 @@
 
   .brand-mark {
     @apply flex h-10 w-10 items-center justify-center rounded-xl text-white;
-    background: #1f9d55;
+    background: linear-gradient(135deg, #10b981, #06b6d4);
   }
 
   .section-kicker {
-    @apply text-sm font-medium text-slate-500;
+    @apply text-sm font-medium text-slate-400;
   }
 
   .hero-minimal {
@@ -378,14 +386,15 @@
 
 @layer components {
   .toast {
-    @apply border bg-white/90 px-4 py-3 text-sm text-slate-700 shadow-lg backdrop-blur;
+    @apply border px-4 py-3 text-sm text-slate-200 shadow-lg backdrop-blur;
+    background: rgba(12, 18, 27, 0.92);
     border-radius: 14px;
-    border-color: rgba(148, 163, 184, 0.28);
+    border-color: rgba(110, 126, 150, 0.3);
     animation: rise 0.2s ease both;
   }
 
   .skeleton {
-    @apply relative overflow-hidden rounded-xl bg-slate-100;
+    @apply relative overflow-hidden rounded-xl bg-slate-800/70;
   }
 
   .skeleton::after {
@@ -396,6 +405,19 @@
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
     animation: shimmer 1.3s infinite;
   }
+}
+
+@layer utilities {
+  .text-slate-900 { color: #e7effc !important; }
+  .text-slate-800 { color: #dbe8f8 !important; }
+  .text-slate-700 { color: #c5d4e7 !important; }
+  .text-slate-600 { color: #a5b6cc !important; }
+  .text-slate-500 { color: #90a3bb !important; }
+  .text-slate-400 { color: #7e93ad !important; }
+  .bg-white { background-color: rgba(15, 20, 28, 0.94) !important; }
+  .bg-slate-50 { background-color: rgba(19, 26, 35, 0.9) !important; }
+  .border-slate-200 { border-color: rgba(110, 126, 150, 0.3) !important; }
+  .border-slate-100 { border-color: rgba(110, 126, 150, 0.2) !important; }
 }
 
 @keyframes shimmer {

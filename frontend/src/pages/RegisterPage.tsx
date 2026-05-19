@@ -34,9 +34,9 @@ export const RegisterPage = () => {
 
   return (
     <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-xl lg:grid-cols-[1fr_1.05fr]">
+      <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[30px] border border-slate-700/40 bg-slate-950/70 shadow-2xl backdrop-blur lg:grid-cols-[1fr_1.05fr]">
         <aside className="bg-[linear-gradient(145deg,#0f172a,#0f766e)] p-8 text-white sm:p-10">
-          <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15"><BoltIcon className="h-5 w-5" /></div><p className="font-display text-2xl font-semibold">GreenVolt Nexus</p></div>
+          <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-200/20"><BoltIcon className="h-5 w-5" /></div><p className="font-display text-2xl font-semibold">GreenVolt Nexus</p></div>
           <h1 className="mt-8 font-display text-4xl font-semibold">Build the future of EV charging.</h1>
           <p className="mt-4 text-emerald-100">Create your account as a user or station owner and access a premium operations experience.</p>
           <div className="mt-8 space-y-3 text-sm text-emerald-100">
@@ -62,7 +62,7 @@ export const RegisterPage = () => {
             </select>
           </div>
 
-          {error ? <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p> : null}
+          {error ? <p className="mt-4 rounded-lg bg-rose-500/15 px-3 py-2 text-sm text-rose-600">{error}</p> : null}
 
           <button type="submit" className="btn-primary mt-6 w-full" disabled={submitting}>
             {submitting ? 'Creating account...' : 'Create account'}
