@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import session from 'express-session';
 import helmet from 'helmet';
 import { getDatabaseStatus } from './config/database.js';
 import { env } from './config/env.js';
@@ -19,6 +20,20 @@ app.use(
 app.use(helmet());
 app.use(loggerMiddleware);
 app.use(express.json());
+app.use(
+  session({
+    name: 'greenvolt.sid',
+    secret: env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    }
+  })
+);
 
 app.get('/health', (_req, res) => {
   res.json({

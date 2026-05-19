@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import { USER_ROLES } from '../constants/enums.js';
 import { UserModel } from '../models/User.js';
 import { ApiError } from '../utils/apiError.js';
-import { signToken } from '../utils/token.js';
 
 interface RegisterInput {
   name: string;
@@ -38,14 +37,7 @@ export const authService = {
       role
     });
 
-    const token = signToken({
-      id: user.id,
-      email: user.email,
-      role: user.role
-    });
-
     return {
-      token,
       user: {
         id: user.id,
         name: user.name,
@@ -68,14 +60,7 @@ export const authService = {
       throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid email or password');
     }
 
-    const token = signToken({
-      id: user.id,
-      email: user.email,
-      role: user.role
-    });
-
     return {
-      token,
       user: {
         id: user.id,
         name: user.name,
@@ -96,4 +81,3 @@ export const authService = {
     return user;
   }
 };
-

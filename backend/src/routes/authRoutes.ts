@@ -31,7 +31,7 @@ const loginSchema = z.object({
 
 router.post('/register', validate(registerSchema), asyncHandler(authController.register));
 router.post('/login', validate(loginSchema), asyncHandler(authController.login));
+router.post('/logout', protect, asyncHandler(authController.logout));
 router.get('/me', protect, asyncHandler(authController.profile));
 
 export { router as authRoutes };
-

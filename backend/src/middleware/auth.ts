@@ -1,18 +1,14 @@
 import type { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ApiError } from '../utils/apiError.js';
-import { verifyToken } from '../utils/token.js';
 import type { UserRole } from '../constants/enums.js';
 
 export const protect = (req: Request, _res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader?.startsWith('Bearer ')) {
+  if (!req.session.user) {
     return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Authentication required'));
   }
 
-  const token = authHeader.replace('Bearer ', '');
-  req.user = verifyToken(token);
+  req.user = req.session.user;
   next();
 };
 
@@ -25,4 +21,3 @@ export const authorize =
 
     next();
   };
-

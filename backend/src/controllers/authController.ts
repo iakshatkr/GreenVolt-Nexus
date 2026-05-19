@@ -5,12 +5,28 @@ import { authService } from '../services/authService.js';
 export const authController = {
   register: async (req: Request, res: Response) => {
     const payload = await authService.register(req.body);
+    req.session.user = {
+      id: payload.user.id,
+      email: payload.user.email,
+      role: payload.user.role
+    };
     res.status(StatusCodes.CREATED).json({ success: true, data: payload });
   },
 
   login: async (req: Request, res: Response) => {
     const payload = await authService.login(req.body);
+    req.session.user = {
+      id: payload.user.id,
+      email: payload.user.email,
+      role: payload.user.role
+    };
     res.status(StatusCodes.OK).json({ success: true, data: payload });
+  },
+
+  logout: async (req: Request, res: Response) => {
+    req.session.destroy(() => {
+      res.status(StatusCodes.OK).json({ success: true, message: 'Logged out successfully' });
+    });
   },
 
   profile: async (req: Request, res: Response) => {
@@ -18,4 +34,3 @@ export const authController = {
     res.status(StatusCodes.OK).json({ success: true, data: profile });
   }
 };
-
