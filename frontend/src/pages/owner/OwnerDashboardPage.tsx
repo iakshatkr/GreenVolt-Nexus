@@ -9,9 +9,11 @@ import {
   YAxis
 } from 'recharts';
 import { apiClient } from '../../api/client';
+import { EmptyState } from '../../components/shared/EmptyState';
 import { MetricCard } from '../../components/shared/MetricCard';
 import { SectionCard } from '../../components/shared/SectionCard';
 import { StatusBadge } from '../../components/shared/StatusBadge';
+import { useToast } from '../../components/shared/ToastProvider';
 import { formatCurrency, formatDateTime } from '../../lib/utils';
 import type { ApiResponse, Booking, OwnerAnalytics, Station } from '../../types';
 
@@ -37,6 +39,7 @@ export const OwnerDashboardPage = () => {
   const [analytics, setAnalytics] = useState<OwnerAnalytics | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState('');
+  const { showToast } = useToast();
 
   const loadDashboard = async () => {
     const stationResponse = await apiClient.get<ApiResponse<Station[]>>('/stations/owner/list');
@@ -73,10 +76,12 @@ export const OwnerDashboardPage = () => {
         availability: [{ day: 'Daily', startTime: form.open, endTime: form.close }]
       });
       setMessage('Station submitted for admin approval.');
+      showToast('Station submitted for review.', 'success');
       setForm(emptyForm);
       await loadDashboard();
     } catch {
       setMessage('Unable to submit station right now.');
+      showToast('Station submission failed.', 'error');
     }
   };
 
@@ -159,6 +164,7 @@ export const OwnerDashboardPage = () => {
               ))}
             </tbody>
           </table>
+          {!stations.length ? <div className="mt-4"><EmptyState title="No stations yet" description="Register your first charging station to start receiving bookings." /></div> : null}
         </div>
       </SectionCard>
 
@@ -194,6 +200,7 @@ export const OwnerDashboardPage = () => {
               ))}
             </tbody>
           </table>
+          {!bookings.length ? <div className="mt-4"><EmptyState title="No incoming bookings" description="New user reservations will appear here once your stations go live." /></div> : null}
         </div>
       </SectionCard>
     </div>
