@@ -6,6 +6,14 @@
 
 @layer base {
   :root {
+    --bg: #f6f8fc;
+    --surface: #ffffff;
+    --surface-muted: #f8fafc;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --line: #e2e8f0;
+    --brand: #0f9d77;
+    --brand-strong: #0a7a5d;
     color: #0f172a;
     background: #f5f7fb;
   }
@@ -16,7 +24,10 @@
 
   body {
     @apply min-h-screen font-body antialiased;
-    background: linear-gradient(180deg, #f8fafc 0%, #f3f5f9 100%);
+    background:
+      radial-gradient(circle at 10% -10%, rgba(15, 157, 119, 0.12), transparent 34%),
+      radial-gradient(circle at 95% 10%, rgba(37, 99, 235, 0.09), transparent 32%),
+      linear-gradient(180deg, #f8fafc 0%, #f2f6fb 100%);
     color: #0f172a;
   }
 
@@ -362,5 +373,33 @@
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@layer components {
+  .toast {
+    @apply border bg-white/90 px-4 py-3 text-sm text-slate-700 shadow-lg backdrop-blur;
+    border-radius: 14px;
+    border-color: rgba(148, 163, 184, 0.28);
+    animation: rise 0.2s ease both;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-xl bg-slate-100;
+  }
+
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    animation: shimmer 1.3s infinite;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
   }
 }
