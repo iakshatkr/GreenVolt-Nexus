@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   Bar,
   BarChart,
@@ -12,6 +13,7 @@ import { apiClient } from '../../api/client';
 import { EmptyState } from '../../components/shared/EmptyState';
 import { MetricCard } from '../../components/shared/MetricCard';
 import { SectionCard } from '../../components/shared/SectionCard';
+import { Skeleton } from '../../components/shared/Skeleton';
 import { StatusBadge } from '../../components/shared/StatusBadge';
 import { useToast } from '../../components/shared/ToastProvider';
 import { formatCurrency } from '../../lib/utils';
@@ -27,23 +29,44 @@ export const AdminDashboardPage = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [stations, setStations] = useState<Station[]>([]);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
 
   const loadDashboard = async () => {
-    const [analyticsResponse, usersResponse, stationsResponse] = await Promise.all([
-      apiClient.get<ApiResponse<AdminAnalytics>>('/analytics/admin'),
-      apiClient.get<ApiResponse<AdminUser[]>>('/admin/users'),
-      apiClient.get<ApiResponse<Station[]>>('/admin/stations')
-    ]);
+    setLoading(true);
+    try {
+      const [analyticsResponse, usersResponse, stationsResponse] = await Promise.all([
+        apiClient.get<ApiResponse<AdminAnalytics>>('/analytics/admin'),
+        apiClient.get<ApiResponse<AdminUser[]>>('/admin/users'),
+        apiClient.get<ApiResponse<Station[]>>('/admin/stations')
+      ]);
 
-    setAnalytics(analyticsResponse.data.data);
-    setUsers(usersResponse.data.data);
-    setStations(stationsResponse.data.data);
+      setAnalytics(analyticsResponse.data.data);
+      setUsers(usersResponse.data.data);
+      setStations(stationsResponse.data.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     void loadDashboard();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-4">
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+        </div>
+        <Skeleton className="h-80" />
+        <Skeleton className="h-80" />
+      </div>
+    );
+  }
 
   const moderateStation = async (stationId: string, approvalStatus: 'approved' | 'rejected') => {
     setMessage('');
@@ -70,7 +93,12 @@ export const AdminDashboardPage = () => {
     : [];
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32 }}
+      className="space-y-6"
+    >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Users" value={String(analytics?.users ?? 0)} hint="Registered platform accounts." />
         <MetricCard label="Stations" value={String(analytics?.stations ?? 0)} hint="All station listings in the system." />
@@ -181,6 +209,6 @@ export const AdminDashboardPage = () => {
           {!users.length ? <div className="mt-4"><EmptyState title="No users found" description="User accounts will appear here once registrations happen." /></div> : null}
         </div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 };

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Bar,
   BarChart,
@@ -15,6 +16,7 @@ import { StationMap } from '../../components/map/StationMap';
 import { EmptyState } from '../../components/shared/EmptyState';
 import { MetricCard } from '../../components/shared/MetricCard';
 import { SectionCard } from '../../components/shared/SectionCard';
+import { Skeleton } from '../../components/shared/Skeleton';
 import { StatusBadge } from '../../components/shared/StatusBadge';
 import { useToast } from '../../components/shared/ToastProvider';
 import { formatCurrency, formatDateTime } from '../../lib/utils';
@@ -126,11 +128,26 @@ export const UserDashboardPage = () => {
   };
 
   if (loading) {
-    return <div className="panel p-10 text-center text-slate-500">Loading user dashboard...</div>;
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </div>
+        <Skeleton className="h-80" />
+        <Skeleton className="h-80" />
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32 }}
+      className="space-y-6"
+    >
       <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="panel overflow-hidden bg-[linear-gradient(135deg,#082032,#115037)] p-8 text-white">
           <p className="text-xs uppercase tracking-[0.35em] text-brand-200">Driver dashboard</p>
@@ -372,17 +389,30 @@ export const UserDashboardPage = () => {
         </div>
       </SectionCard>
 
-      {bookingSuccessModal ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/35 p-4">
-          <div className="panel w-full max-w-md p-6">
-            <h3 className="text-xl font-semibold text-slate-900">Booking Confirmed</h3>
-            <p className="mt-2 text-sm text-slate-600">Your charging slot is reserved. You can proceed to payment from the bookings table.</p>
-            <button className="btn-primary mt-5 w-full" onClick={() => setBookingSuccessModal(false)}>
-              Continue
-            </button>
-          </div>
-        </div>
-      ) : null}
-    </div>
+      <AnimatePresence>
+        {bookingSuccessModal ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/35 p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.98 }}
+              transition={{ duration: 0.24 }}
+              className="panel glass-modal w-full max-w-md p-6"
+            >
+              <h3 className="text-xl font-semibold text-slate-900">Booking Confirmed</h3>
+              <p className="mt-2 text-sm text-slate-600">Your charging slot is reserved. You can proceed to payment from the bookings table.</p>
+              <button className="btn-primary mt-5 w-full" onClick={() => setBookingSuccessModal(false)}>
+                Continue
+              </button>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </motion.div>
   );
 };

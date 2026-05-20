@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   Bar,
   BarChart,
@@ -12,6 +13,7 @@ import { apiClient } from '../../api/client';
 import { EmptyState } from '../../components/shared/EmptyState';
 import { MetricCard } from '../../components/shared/MetricCard';
 import { SectionCard } from '../../components/shared/SectionCard';
+import { Skeleton } from '../../components/shared/Skeleton';
 import { StatusBadge } from '../../components/shared/StatusBadge';
 import { useToast } from '../../components/shared/ToastProvider';
 import { formatCurrency, formatDateTime } from '../../lib/utils';
@@ -39,21 +41,42 @@ export const OwnerDashboardPage = () => {
   const [analytics, setAnalytics] = useState<OwnerAnalytics | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
 
   const loadDashboard = async () => {
-    const stationResponse = await apiClient.get<ApiResponse<Station[]>>('/stations/owner/list');
-    const bookingResponse = await apiClient.get<ApiResponse<Booking[]>>('/bookings/owner');
-    const analyticsResponse = await apiClient.get<ApiResponse<OwnerAnalytics>>('/analytics/owner');
+    setLoading(true);
+    try {
+      const stationResponse = await apiClient.get<ApiResponse<Station[]>>('/stations/owner/list');
+      const bookingResponse = await apiClient.get<ApiResponse<Booking[]>>('/bookings/owner');
+      const analyticsResponse = await apiClient.get<ApiResponse<OwnerAnalytics>>('/analytics/owner');
 
-    setStations(stationResponse.data.data);
-    setBookings(bookingResponse.data.data);
-    setAnalytics(analyticsResponse.data.data);
+      setStations(stationResponse.data.data);
+      setBookings(bookingResponse.data.data);
+      setAnalytics(analyticsResponse.data.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     void loadDashboard();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-4">
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+        </div>
+        <Skeleton className="h-80" />
+        <Skeleton className="h-80" />
+      </div>
+    );
+  }
 
   const submitStation = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -86,7 +109,12 @@ export const OwnerDashboardPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32 }}
+      className="space-y-6"
+    >
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Stations" value={String(analytics?.stations ?? 0)} hint="Stations owned by your account." />
         <MetricCard label="Bookings" value={String(analytics?.bookings ?? 0)} hint="Total sessions across all owned stations." />
@@ -203,6 +231,6 @@ export const OwnerDashboardPage = () => {
           {!bookings.length ? <div className="mt-4"><EmptyState title="No incoming bookings" description="New user reservations will appear here once your stations go live." /></div> : null}
         </div>
       </SectionCard>
-    </div>
+    </motion.div>
   );
 };
