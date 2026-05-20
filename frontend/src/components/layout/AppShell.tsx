@@ -9,8 +9,9 @@ import {
   BellIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { useToast } from '../shared/ToastProvider';
 import { useAuthStore } from '../../store/authStore';
@@ -31,6 +32,7 @@ export const AppShell = () => {
   const logout = useAuthStore((state) => state.logout);
   const [menuOpen, setMenuOpen] = useState(false);
   const { showToast } = useToast();
+  const location = useLocation();
 
   if (!user) {
     return null;
@@ -63,7 +65,12 @@ export const AppShell = () => {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[280px_1fr] lg:items-start">
-          <aside className={cn('panel lg:sticky lg:top-4', menuOpen ? 'block' : 'hidden lg:block')}>
+          <motion.aside
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.35 }}
+            className={cn('panel lg:sticky lg:top-4', menuOpen ? 'block' : 'hidden lg:block')}
+          >
             <div className="border-b border-white/8 p-5 sm:p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-green-500 text-black">
@@ -94,6 +101,7 @@ export const AppShell = () => {
                       className={({ isActive }) =>
                         cn(
                           'flex min-w-max items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition lg:min-w-0',
+                          'hover:scale-[1.01] active:scale-[0.99]',
                           isActive
                             ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
                             : 'border-slate-200 bg-transparent text-slate-600 hover:bg-slate-50'
@@ -112,7 +120,7 @@ export const AppShell = () => {
                 Sign out
               </button>
             </div>
-          </aside>
+          </motion.aside>
 
           <main className="min-w-0">
             <header className="panel mb-4 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -134,7 +142,17 @@ export const AppShell = () => {
                 </div>
               </div>
             </header>
-            <Outlet />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.28 }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
       </div>
