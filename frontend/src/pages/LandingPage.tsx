@@ -66,8 +66,8 @@ const stagger = {
   }
 };
 
-const CinematicHero3D = lazy(() =>
-  import('../components/landing/CinematicHero3D').then((module) => ({ default: module.CinematicHero3D }))
+const CinematicEVHero3D = lazy(() =>
+  import('../components/landing/CinematicEVHero3D').then((module) => ({ default: module.CinematicEVHero3D }))
 );
 
 const AnimatedCount = ({ value, suffix }: { value: number; suffix: string }) => {
@@ -164,7 +164,7 @@ export const LandingPage = () => {
               </div>
             }
           >
-            <CinematicHero3D disperse={heroDisperse} />
+            <CinematicEVHero3D progress={heroDisperse} />
           </Suspense>
         </div>
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.16),transparent_56%)]" />
@@ -196,7 +196,7 @@ export const LandingPage = () => {
             className="w-full"
           >
             <p className="mx-auto max-w-2xl text-sm text-slate-300 sm:text-base">
-              for modern charging networks, built to feel immersive, calm, and premium.
+              smart EV charging infrastructure with clean energy intelligence, built for a calm and premium mobility future.
             </p>
             <div className="pointer-events-auto mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <a href="#metrics" className="btn-secondary min-w-[180px]">

@@ -1,7 +1,7 @@
 import { Sparkles } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useMemo, type ReactNode } from 'react';
-import { Group, MathUtils } from 'three';
+import { useMemo, useRef, type ReactNode } from 'react';
+import { Group, MathUtils, MeshBasicMaterial } from 'three';
 import { ChargingCable } from './ChargingCable';
 import { EV_COLORS, clamp01, smoothStep } from './constants';
 import { EnergyParticles } from './EnergyParticles';
@@ -33,44 +33,41 @@ const BackArchitecture = () => (
 );
 
 const ChargingAura = ({ state }: { state: SceneAnimationState }) => {
-  const aura = useMemo(() => ({ value: 0.2 }), []);
+  const material = useRef<MeshBasicMaterial>(null);
 
   useFrame((sceneState) => {
-    aura.value = MathUtils.lerp(aura.value, 0.2 + state.chargeLevel * 0.45 - state.depart * 0.1, 0.08);
+    if (!material.current) {
+      return;
+    }
+
+    let aura = MathUtils.lerp(material.current.opacity, 0.2 + state.chargeLevel * 0.45 - state.depart * 0.1, 0.08);
     const pulse = 0.85 + Math.sin(sceneState.clock.elapsedTime * 1.9) * 0.15;
-    aura.value *= pulse;
+    aura *= pulse;
+    material.current.opacity = aura;
   });
 
   return (
     <mesh position={[0.68 + state.depart * 1.2, 0.04, 0.4]} rotation={[-Math.PI / 2, 0, 0]}>
       <ringGeometry args={[0.45, 1.5, 48]} />
-      <meshBasicMaterial color={EV_COLORS.primaryGlow} transparent opacity={aura.value} />
+      <meshBasicMaterial ref={material} color={EV_COLORS.primaryGlow} transparent opacity={0.2} />
     </mesh>
   );
 };
 
 const SceneMotion = ({ state, children }: { state: SceneAnimationState; children: ReactNode }) => {
-  const root = useMemo(() => ({ group: null as Group | null }), []);
+  const root = useRef<Group>(null);
 
   useFrame((sceneState) => {
-    if (!root.group) {
+    if (!root.current) {
       return;
     }
 
     const t = sceneState.clock.elapsedTime;
-    root.group.position.y = Math.sin(t * 0.45) * 0.05 + state.chargeLevel * 0.03;
-    root.group.rotation.y = MathUtils.lerp(root.group.rotation.y, -0.07 + state.depart * -0.12, 0.05);
+    root.current.position.y = Math.sin(t * 0.45) * 0.05 + state.chargeLevel * 0.03;
+    root.current.rotation.y = MathUtils.lerp(root.current.rotation.y, -0.07 + state.depart * -0.12, 0.05);
   });
 
-  return (
-    <group
-      ref={(group) => {
-        root.group = group;
-      }}
-    >
-      {children}
-    </group>
-  );
+  return <group ref={root}>{children}</group>;
 };
 
 export const EVChargingScene = ({ progress = 0 }: EVChargingHero3DProps) => {
