@@ -1,8 +1,8 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { MathUtils } from 'three';
-import { Reactor } from '../3d/reactor';
+import { Reactor } from '../../components/3d/reactor';
 
-interface CinematicHero3DProps {
+interface CinematicHero3DSceneProps {
   disperse?: number;
 }
 
@@ -18,7 +18,7 @@ const CameraRig = () => {
   return null;
 };
 
-export const CinematicHero3D = ({ disperse = 0 }: CinematicHero3DProps) => (
+export const CinematicHero3DScene = ({ disperse = 0 }: CinematicHero3DSceneProps) => (
   <Canvas
     camera={{ position: [0, 0.08, 4], fov: 34 }}
     dpr={[1, 1.35]}
