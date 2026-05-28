@@ -1,6 +1,12 @@
-import { Canvas } from '@react-three/fiber';
-import { useMemo } from 'react';
+import { Sparkles } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useMemo, type ReactNode } from 'react';
+import { Group, MathUtils } from 'three';
+import { ChargingCable } from './ChargingCable';
 import { EV_COLORS, clamp01, smoothStep } from './constants';
+import { EnergyParticles } from './EnergyParticles';
+import { FuturisticEV } from './FuturisticEV';
+import { SmartChargingStation } from './SmartChargingStation';
 import type { EVChargingHero3DProps, SceneAnimationState } from './types';
 import { CameraRig } from './CameraRig';
 
@@ -25,6 +31,47 @@ const BackArchitecture = () => (
     </mesh>
   </group>
 );
+
+const ChargingAura = ({ state }: { state: SceneAnimationState }) => {
+  const aura = useMemo(() => ({ value: 0.2 }), []);
+
+  useFrame((sceneState) => {
+    aura.value = MathUtils.lerp(aura.value, 0.2 + state.chargeLevel * 0.45 - state.depart * 0.1, 0.08);
+    const pulse = 0.85 + Math.sin(sceneState.clock.elapsedTime * 1.9) * 0.15;
+    aura.value *= pulse;
+  });
+
+  return (
+    <mesh position={[0.68 + state.depart * 1.2, 0.04, 0.4]} rotation={[-Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[0.45, 1.5, 48]} />
+      <meshBasicMaterial color={EV_COLORS.primaryGlow} transparent opacity={aura.value} />
+    </mesh>
+  );
+};
+
+const SceneMotion = ({ state, children }: { state: SceneAnimationState; children: ReactNode }) => {
+  const root = useMemo(() => ({ group: null as Group | null }), []);
+
+  useFrame((sceneState) => {
+    if (!root.group) {
+      return;
+    }
+
+    const t = sceneState.clock.elapsedTime;
+    root.group.position.y = Math.sin(t * 0.45) * 0.05 + state.chargeLevel * 0.03;
+    root.group.rotation.y = MathUtils.lerp(root.group.rotation.y, -0.07 + state.depart * -0.12, 0.05);
+  });
+
+  return (
+    <group
+      ref={(group) => {
+        root.group = group;
+      }}
+    >
+      {children}
+    </group>
+  );
+};
 
 export const EVChargingScene = ({ progress = 0 }: EVChargingHero3DProps) => {
   const state = useMemo<SceneAnimationState>(() => {
@@ -54,16 +101,38 @@ export const EVChargingScene = ({ progress = 0 }: EVChargingHero3DProps) => {
       <GroundPlate />
       <BackArchitecture />
 
-      <group position={[0, 0.08, 0]}>
-        <mesh position={[-0.35, -0.1, 0]}>
-          <boxGeometry args={[2.4, 0.2, 1.2]} />
-          <meshStandardMaterial color="#1d2735" roughness={0.38} metalness={0.46} />
+      <SceneMotion state={state}>
+        <mesh position={[-0.28, -0.28, 0]}>
+          <boxGeometry args={[4.2, 0.12, 2.4]} />
+          <meshStandardMaterial color="#121a28" roughness={0.42} metalness={0.32} />
         </mesh>
-        <mesh position={[1.9, 0.2, -0.2]}>
-          <boxGeometry args={[0.48, 1.24, 0.48]} />
-          <meshStandardMaterial color="#a8b6c8" roughness={0.3} metalness={0.7} emissive={EV_COLORS.secondaryGlow} emissiveIntensity={0.08 + state.chargeLevel * 0.2} />
+
+        <mesh position={[-0.28, -0.2, 0]}>
+          <boxGeometry args={[4, 0.06, 2.2]} />
+          <meshStandardMaterial
+            color="#162133"
+            roughness={0.16}
+            metalness={0.42}
+            emissive={EV_COLORS.secondaryGlow}
+            emissiveIntensity={0.03 + state.chargeLevel * 0.12}
+          />
         </mesh>
-      </group>
+
+        <FuturisticEV state={state} />
+        <SmartChargingStation state={state} />
+        <ChargingCable state={state} />
+        <ChargingAura state={state} />
+        <EnergyParticles state={state} />
+      </SceneMotion>
+
+      <Sparkles
+        count={14}
+        scale={[5, 1.6, 4]}
+        size={1.1}
+        speed={0.11}
+        opacity={0.2}
+        color={EV_COLORS.secondaryGlow}
+      />
 
       <CameraRig />
     </Canvas>
